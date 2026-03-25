@@ -1,5 +1,5 @@
 <p style="text-align: center">
-  <img src="./src/assets/logo.svg" alt="Logo">
+  <img src="./src/assets/logo.svg" alt="Logo"  width="300">
 </p>
 
 - 1.旨在将B站上影响体验的地方都净化掉，目前实现了广告跳过的能力（借鉴了[BilibiliSponsorBlock](https://github.com/hanydd/BilibiliSponsorBlock)，同时后端api也是来自此项目）
