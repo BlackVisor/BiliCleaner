@@ -1,4 +1,5 @@
 import {GM_xmlhttpRequest} from "$"
+import {globalConfig} from "../config/global.ts";
 
 /**
  * 通用请求配置（可全局配置）
@@ -18,7 +19,8 @@ class TamperMonkeyApi {
     private defaultConfig: RequestConfig = {
         timeout: 10000,
         headers: {
-            'Content-Type': 'application/json charset=utf-8',
+            'Content-Type': 'application/json;charset=utf-8',
+            ...globalConfig.headers
         },
         responseType: 'json',
         anonymous: true,
@@ -83,7 +85,7 @@ class TamperMonkeyApi {
                     // 处理 HTTP 错误（状态码非 2xx）
                     console.log(`[BC] fetching ${method} ${finalUrl}, response status: ${response.status}`)
                     if (!response.status.toString().startsWith('2')) {
-                        return reject(new Error(`Request failed with status ${response.status}: ${response.statusText}`))
+                        return reject(new Error(`request failed with status ${response.status}: ${response.responseText}`))
                     }
                     // 根据 responseType 返回对应数据
                     resolve(response.response as T)

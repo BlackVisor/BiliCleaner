@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import BiliCleaner from './App'
-import './index.css'
+import SkipSegment from './apps/SkipSegment/SkipSegment.tsx'
+import {MorePlayRate} from "./apps/MorePlayRate.tsx";
 
 ReactDOM.createRoot(
     (() => {
@@ -13,6 +13,7 @@ ReactDOM.createRoot(
     })(),
 ).render(
     <React.StrictMode>
-        <BiliCleaner/>
+        <SkipSegment/>
+        <MorePlayRate/>
     </React.StrictMode>,
 )

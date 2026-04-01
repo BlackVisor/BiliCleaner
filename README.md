@@ -1,11 +1,15 @@
-<p style="text-align: center">
-  <img src="./src/assets/logo.svg" alt="Logo"  width="300">
-</p>
+<div align="center">
+  <img src="./src/assets/logo.svg" alt="Logo" width="300">
+</div>
 
-- 1.旨在将B站上影响体验的地方都净化掉，目前实现了广告跳过的能力（借鉴了[BilibiliSponsorBlock](https://github.com/hanydd/BilibiliSponsorBlock)，同时后端api也是来自此项目）
+- 1.旨在实现纯净的Bilibili观看体验，功能借鉴和后端数据都来自致谢中两个仓库
 - 2.通过vite+react+typescript构建（采用react主要是为了后期做一些页面上的功能扩展）
 - 3.通过vite-plugin-monkey实现的build成tampermonkey上运行的用户脚本，为了少装扩展和足够轻量化
-- 4.目前仅粗暴的实现了拿到广告片段后直接跳过，一些细分功能待后续开发
+- 4.yarn build后在dist后生成的js在油猴安装即可使用，或者在[greasyfork](https://greasyfork.org/zh-CN/scripts/571063-bilicleaner)直接安装
+- 5.目前已实现如下：
+  1. 识别到后端的片段后自动跳过（改用了interval实现，原版是监听的timeupdate）
+  2. 将上报片段按钮放到了右下角，为了醒目样式复用了官方AI机器人 ![上报按钮截图](./src/assets/guide/report-segment-button.png) ![上报按钮截图](./src/assets/guide/report-segment-modal.png)
+
 
 #### 致谢
 
