@@ -1,11 +1,13 @@
 import {useEffect, useRef, useState} from "react";
+import {$window} from "../config/global.ts";
 
 export const useUserId = () => {
     const [userId, setUserId] = useState<number>(0)
     const checkTimes = useRef<number>(0)
     useEffect(() => {
         const getUserId = () => {
-            return window?.__INITIAL_STATE__?.userInfo?.mid || window?.__INITIAL_STATE__?.user?.mid || 0
+            // 本地开发时需将unsafeWindow替换成window
+            return $window?.__INITIAL_STATE__?.userInfo?.mid || $window?.__INITIAL_STATE__?.user?.mid || 0
         }
         const currentUserId = getUserId()
         if (currentUserId) {

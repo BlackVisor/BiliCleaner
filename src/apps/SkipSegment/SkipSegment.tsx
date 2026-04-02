@@ -5,12 +5,13 @@ import {formatTime} from "../../utils/common.ts"
 import {useVideo} from "../../hooks/useVideo.tsx"
 import {BvId, ChapterId} from "../../types/global"
 import bilibot from "../../assets/bilibot.svg"
-import {Form, message, Modal, Select, Tooltip} from "antd";
+import {Form, message, Modal, Radio, Tooltip} from "antd/es";
 import FormItem from "antd/es/form/FormItem";
 import {createPortal} from "react-dom";
 import {useUserId} from "../../hooks/useUserId.ts";
 import {getHashBySHA256} from "../../utils/crypto.ts";
 import './SkipSegment.css'
+import {useForm} from "antd/es/form/Form";
 
 const videoSelectors = [".bpx-player-video-area video", ".bilibili-player video", "video"]
 // progress is bar when hovering on video player
@@ -35,11 +36,11 @@ interface ReportSegmentProps {
     endTime: number,
     handleChangeStartTime: (reset?: boolean) => void,
     handleChangeEndTime: (reset?: boolean) => void,
-    container: HTMLDivElement
+    container: HTMLDivElement,
 }
 
 const getPercentage = (seconds: number, duration = 0, isLeft = true) => {
-    if (seconds >= duration) {
+    if (Math.floor(seconds) > Math.floor(duration)) {
         console.warn(`[BC] video duration for getPercentage is out of range: ${seconds}, ${duration}.`)
         return isLeft ? '100%' : '0%'
     }
@@ -64,7 +65,7 @@ const reportCategoryOptions = (Object.entries(redundantTypeConfig) as [Redundant
                                                 <span>{v.name}</span>
                                             </div>
                                         ),
-                                        value: k
+                                        value: k,
                                     }
                                 })
 
@@ -94,15 +95,15 @@ const SegmentBar: FC<SegmentBarProps> = (props) => {
 
 const ReportSegmentModal: FC<ReportSegmentProps> = (props) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
-    const [category, setCategory] = useState<RedundantType>(RedundantType.SPONSOR)
     const [loading, setLoading] = useState<boolean>(false)
+    const [reportForm] = useForm()
 
     const reset = () => {
         setModalOpen(false)
         props.handleChangeStartTime(true)
         props.handleChangeEndTime(true)
+        reportForm.resetFields()
     }
-
     const reportSegments = async () => {
         if (props.endTime - props.startTime < 10) {
             message.error('片段时长至少10s')
@@ -121,7 +122,7 @@ const ReportSegmentModal: FC<ReportSegmentProps> = (props) => {
                     {
                         segment: [props.startTime, props.endTime],
                         actionType: 'skip',
-                        category: category
+                        category: reportForm.getFieldValue('category') as RedundantType
                     }
                 ]
             })
@@ -147,19 +148,19 @@ const ReportSegmentModal: FC<ReportSegmentProps> = (props) => {
             id='report-segment-button'
             className='report-segment-button'
             onClick={() => {
-                props.startTime
-                    ? props.endTime
-                        ? setModalOpen(true)
-                        : props.handleChangeEndTime()
-                    :props.handleChangeStartTime()
+                if (props.startTime) {
+                    props.handleChangeEndTime()
+                    setModalOpen(true)
+                } else {
+                    props.handleChangeStartTime()
+                }
             }}
         >
             <img src={bilibot} alt='bilibot' className='report-segment-button-icon'/>
             <Tooltip title={
                 <>
-                    1.首次点击将当前时间记为分段起点<br/>
-                    2.二次点击将当前时间记为分段终点<br/>
-                    3.第三次点击打开上报弹窗
+                    1.首次点击将当前时间记为片段起点<br/>
+                    2.再次点击记录终点并打开弹窗<br/>
                 </>
             }>
                 <span
@@ -171,9 +172,9 @@ const ReportSegmentModal: FC<ReportSegmentProps> = (props) => {
                     {
                         props.startTime
                             ? props.endTime
-                                ? '完成上报'
-                                : '起点已知'
-                            : '上报广告'
+                                ? '记录片段终点'
+                                : '记录片段终点'
+                            : '记录片段起点'
                     }
 
                 </span>
@@ -182,6 +183,7 @@ const ReportSegmentModal: FC<ReportSegmentProps> = (props) => {
         </div>
         {/* report modal */}
         <Modal
+            className='report-segment-modal'
             title='仅支持标记为跳过'
             open={modalOpen}
             closable={false}
@@ -204,28 +206,24 @@ const ReportSegmentModal: FC<ReportSegmentProps> = (props) => {
             centered={true}
         >
             <Form
-                initialValues={{
-                    category: reportCategoryOptions[0]
-                }}
+                form={reportForm}
+                initialValues={{category: reportCategoryOptions[0].value}}
                 style={{
                     paddingTop: '1em'
                 }}
             >
                 <FormItem
                     label='时间范围'
-                    name='segmentRange'
                 >
                     <span>{`${formatTime(props.startTime)} -> ${formatTime(props.endTime)}`}</span>
                 </FormItem>
                 <FormItem
                     label='片段类型'
                     name='category'
+                    required={true}
+                    style={{marginBottom: '12px'}}
                 >
-                    <Select
-                        options={reportCategoryOptions}
-                        onSelect={(target) => {setCategory(target.value as RedundantType)}}
-                        listHeight={800}
-                    />
+                    <Radio.Group options={reportCategoryOptions}/>
                 </FormItem>
             </Form>
         </Modal>

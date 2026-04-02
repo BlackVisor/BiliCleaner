@@ -11,8 +11,8 @@
 }
 
 .report-segment-button-icon {
-    width: 24px;   /* 注意：行内样式写 24% 通常在工具栏会太小或随容器变形 */
-    height: 24px;  /* 建议在工具栏中使用固定像素值，如 24px */
+    width: 24px; /* 注意：行内样式写 24% 通常在工具栏会太小或随容器变形 */
+    height: 24px; /* 建议在工具栏中使用固定像素值，如 24px */
     display: flex;
     align-items: center;
     justify-content: center;

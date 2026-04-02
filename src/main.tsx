@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import SkipSegment from './apps/SkipSegment/SkipSegment.tsx'
-import {MorePlayRate} from "./apps/MorePlayRate.tsx";
+import {MorePlayRate} from "./apps/MorePlayRate.tsx"
 
 ReactDOM.createRoot(
     (() => {

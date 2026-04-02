@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {BvId, ChapterId} from "../types/global";
+import {$window} from "../config/global.ts";
 
 export const useVideo = () => {
     // videoId is bvid, chapterId is partId (relative to &p=2), so chapterId is the real unique id in player
@@ -8,9 +9,9 @@ export const useVideo = () => {
 
     useEffect(() => {
         const handleUrlChange = () => {
-            // get from window, there are other attributes
-            const newBvId = (window?.__INITIAL_STATE__?.bvid || '') as BvId
-            const newChapterId = (window?.__INITIAL_STATE__?.cid || 0) as ChapterId
+            // get from window (unsafeWindow), there are other attributes
+            const newBvId = ($window?.__INITIAL_STATE__?.bvid || '') as BvId
+            const newChapterId = ($window?.__INITIAL_STATE__?.cid || 0) as ChapterId
             setBvId(newBvId)
             setChapterId((prevChapterId) => {
                 if (prevChapterId !== newChapterId) console.log(`[BC] video changed to: bvId=${newBvId}, chapterId=${newChapterId}`)
@@ -31,10 +32,10 @@ export const useVideo = () => {
             _replaceState.apply(history, args)
             handleUrlChange()
         }
-        window.addEventListener('pushState', handleUrlChange);
+        $window.addEventListener('pushState', handleUrlChange);
 
         return () => {
-            window.removeEventListener('popstate', handleUrlChange);
+            $window.removeEventListener('popstate', handleUrlChange);
             history.pushState = _pushState
             history.replaceState = _replaceState
         }

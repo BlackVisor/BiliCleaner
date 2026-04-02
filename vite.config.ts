@@ -22,7 +22,7 @@ export default defineConfig({
                     'https://*.bilibili.com/list/watchlater*'
                 ],
                 exclude: ['https://live.bilibili.com/*'],
-                grant: ['GM_xmlhttpRequest'],
+                grant: ['GM_xmlhttpRequest', 'unsafeWindow'],
                 connect: ['www.bsbsb.top'],
                 "run-at": "document-end"
             },
@@ -31,7 +31,8 @@ export default defineConfig({
                     // 如果不想把 React 打包进脚本以减小体积，可以引用 CDN
                     'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
                     'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
-                    'antd': cdn.npmmirror('antd', 'umd/antd@6.3.5/dist/antd.min.js'),
+                    'dayjs': cdn.npmmirror('dayjs', 'dayjs.min.js'),
+                    'antd': cdn.npmmirror('antd', 'dist/antd.min.js'),
                 },
             },
         }),
