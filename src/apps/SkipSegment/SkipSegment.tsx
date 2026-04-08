@@ -81,10 +81,11 @@ const SkipSegment: FC = () => {
                             && playerElement.currentTime >= start
                             && playerElement.currentTime <= end
                             // maybe some video source is replaced
-                            && end < playerElement.duration
+                            && end <= playerElement.duration
                         ) {
                             console.log(`[BC] skip from ${formatTime(playerElement.currentTime)} to ${formatTime(end)}`)
                             playerElement.currentTime = end
+                            break
                         }
                     }
                 }

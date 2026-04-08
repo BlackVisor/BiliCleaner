@@ -1,0 +1,38 @@
+name: Build Project
+
+on:
+  push:
+    tags: [ "v*" ] # 增加这一行，监听以 v 开头的标签推送
+
+jobs:
+  build-job:
+    runs-on: ubuntu-latest
+
+    # --- 核心操作：在这里添加权限声明 ---
+    permissions:
+      contents: write  # 允许 Actions 在你的仓库创建 Release 和上传文件
+    # ----------------------------------
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        # 这里根据你的语言安装环境，如 setup-node, setup-java, setup-python 等
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Build
+        run: |
+          yarn install
+          yarn build  # 假设这步会生成一个 'dist' 文件夹
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        # 核心：只有当前推送的是标签时，才执行这一步
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/bilicleaner.user.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
