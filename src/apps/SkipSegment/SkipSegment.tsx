@@ -1,4 +1,4 @@
-import {type FC, useEffect, useState} from 'react'
+import {type FC, useEffect, useRef, useState} from 'react'
 import {getSegments, Segment} from "../../utils/video.ts"
 import {waitForElement} from "../../utils/host.ts"
 import {formatTime} from "../../utils/common.ts"
@@ -14,7 +14,6 @@ const videoSelectors = [".bpx-player-video-area video", ".bilibili-player video"
 const progressBarSelector = '.bpx-player-progress'
 // shadow is bar at the bottom of video player
 const shadowProgressBarSelector = '.bpx-player-shadow-progress-area'
-const notPlayingEvents = ['pause', 'ended', 'waiting', 'seeking', 'stalled', 'suspend', 'emptied']
 const videoToolbarRightSelector = '.video-toolbar-right'
 
 const SkipSegment: FC = () => {
@@ -28,6 +27,7 @@ const SkipSegment: FC = () => {
     const [videoToolbarContainer, setVideoToolbarContainer] = useState<HTMLDivElement | null>(null)
     const [startTime, setStartTime] = useState<number>(0)
     const [endTime, setEndTime] = useState<number>(0)
+    const lastCheckTime = useRef(0)
 
     useEffect(() => {
         if (!bvId || !chapterId) return
@@ -69,40 +69,38 @@ const SkipSegment: FC = () => {
     // add interval to skip when segments update and is playing
     useEffect(() => {
         if (!segments.length || !playerElement) return
-        let checkInterval: number | undefined = undefined
-        const onPlaying = () => {
-            stopCheck()
-            checkInterval = setInterval(() => {
-                if (!playerElement.paused && !playerElement.ended && playerElement.readyState >= 2) {
-                    for (const segment of segments) {
-                        const {start, end} = segment
-                        // valid segment should longer than 3s
-                        if (end - start >= 3
-                            && playerElement.currentTime >= start
-                            && playerElement.currentTime <= end
-                            // maybe some video source is replaced
-                            && end <= playerElement.duration
-                        ) {
-                            console.log(`[BC] skip from ${formatTime(playerElement.currentTime)} to ${formatTime(end)}`)
-                            playerElement.currentTime = end
-                            break
-                        }
-                    }
+
+        const handleTimeUpdate = () => {
+            const now = Date.now()
+            if (playerElement.paused
+                || playerElement.ended
+                || playerElement.readyState < 2
+                // avoid too frequent skip
+                || now - lastCheckTime.current < 300
+            ) return
+
+            lastCheckTime.current = now
+
+            for (const segment of segments) {
+                const {start, end} = segment
+                // valid segment should longer than 3s
+                if (end - start >= 3
+                    && playerElement.currentTime >= start
+                    && playerElement.currentTime < end
+                    // maybe some video source is replaced
+                    && end <= playerElement.duration
+                ) {
+                    console.log(`[BC] skip from ${formatTime(playerElement.currentTime)} to ${formatTime(end)}`)
+                    playerElement.currentTime = end
+                    break
                 }
-            }, 2000)
-            console.log('[BC] initialized interval to skip segment')
-        }
-        const stopCheck = () => {
-            if (checkInterval) clearInterval(checkInterval)
-            checkInterval = undefined
+            }
         }
 
-        playerElement.addEventListener('playing', onPlaying)
-        notPlayingEvents.forEach(eventType => playerElement.addEventListener(eventType, stopCheck))
+        playerElement.addEventListener('timeupdate', handleTimeUpdate)
         return () => {
-            stopCheck()
-            playerElement.removeEventListener('playing', onPlaying)
-            notPlayingEvents.forEach(eventType => playerElement.removeEventListener(eventType, stopCheck))
+            playerElement.removeEventListener('timeupdate', handleTimeUpdate)
+            lastCheckTime.current = 0
         }
     }, [segments, playerElement])
 

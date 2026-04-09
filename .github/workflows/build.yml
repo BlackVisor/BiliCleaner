@@ -22,7 +22,7 @@ jobs:
         # 这里根据你的语言安装环境，如 setup-node, setup-java, setup-python 等
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Run Build
         run: |
