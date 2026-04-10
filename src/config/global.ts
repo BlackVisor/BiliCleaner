@@ -4,7 +4,9 @@ import { unsafeWindow } from "$";
 export const $window = import.meta.env.DEV ? window : unsafeWindow
 
 export const globalConfig = {
-    server: 'https://www.bsbsb.top',
+    // domain is always block by CFW, so use ip directly, used domain is www.bsbsb.top.
+    // below server ip is from https://github.com/hanydd/BilibiliSponsorBlock/issues/267
+    server: 'https://154.222.28.109',
     // fixed headers from https://github.com/hanydd/BilibiliSponsorBlock/wiki/API
     headers: {
         'origin': 'chrome-extension://eaoelafamejbnggahofapllmfhlhajdd',
