@@ -24,7 +24,7 @@ export default defineConfig({
                 ],
                 exclude: ['https://live.bilibili.com/*'],
                 grant: ['GM_xmlhttpRequest', 'unsafeWindow'],
-                connect: ['www.bsbsb.top'],
+                connect: ['www.bsbsb.top', '154.222.28.109'],
                 "run-at": "document-end"
             },
             build: {

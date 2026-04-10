@@ -84,6 +84,9 @@ class TamperMonkeyApi {
                 onload: (response) => {
                     // 处理 HTTP 错误（状态码非 2xx）
                     console.log(`[BC] fetching ${method} ${finalUrl}, response status: ${response.status}`)
+                    if (response.status === 408) {
+                        return reject(new Error('too frequent request'))
+                    }
                     if (!response.status.toString().startsWith('2')) {
                         return reject(new Error(`request failed with status ${response.status}: ${response.responseText}`))
                     }
