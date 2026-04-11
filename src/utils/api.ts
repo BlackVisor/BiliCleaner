@@ -87,7 +87,7 @@ class TamperMonkeyApi {
                     if (response.status === 408) {
                         return reject(new Error('too frequent request'))
                     }
-                    if (!response.status.toString().startsWith('2')) {
+                    if (response.status < 200 || response.status >= 300) {
                         return reject(new Error(`request failed with status ${response.status}: ${response.responseText}`))
                     }
                     // 根据 responseType 返回对应数据
