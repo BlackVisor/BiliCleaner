@@ -7,8 +7,10 @@
 - 3.通过vite-plugin-monkey实现的build成tampermonkey上运行的用户脚本，为了少装扩展和足够轻量化
 - 4.yarn build后在dist后生成的js在油猴安装即可使用，或者在[greasyfork](https://greasyfork.org/zh-CN/scripts/571063-bilicleaner)直接安装
 - 5.目前已实现如下：
-  1. 识别到后端的片段后自动跳过（改用了interval实现，原版是监听的timeupdate）
-  2. 将上报片段按钮放到了右下角，为了醒目样式复用了官方AI机器人 ![上报按钮截图](./src/assets/guide/report-segment-button.png) ![上报按钮截图](./src/assets/guide/report-segment-modal.png)
+  1. 识别到后端的片段后自动跳过，目前尚不支持自定义跳过的类型
+  2. 将上报片段按钮放到了右下角，样式复用了官方AI机器人 ![上报按钮截图](./src/assets/guide/report-segment-button.png) ![上报按钮截图](./src/assets/guide/report-segment-modal.png)
+  3. 为了轻量目前是点击两次后记录区间直接打开上报弹窗，无预览确认流程
+  4. 跳过后自动播放beep.ogg提示音（目前受限于油猴是通过base64硬编码在js中）
 
 
 #### 致谢

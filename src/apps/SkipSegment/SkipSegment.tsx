@@ -3,11 +3,12 @@ import {getSegments, Segment} from "../../utils/video.ts"
 import {waitForElement} from "../../utils/host.ts"
 import {formatTime} from "../../utils/common.ts"
 import {useVideo} from "../../hooks/useVideo.tsx"
-import {createPortal} from "react-dom";
-import {useUserId} from "../../hooks/useUserId.ts";
+import {createPortal} from "react-dom"
+import {useUserId} from "../../hooks/useUserId.ts"
 import './SkipSegment.css'
-import SegmentBar from "./SegmentBar.tsx";
-import ReportSegmentModal from "./ReportSegmentModal.tsx";
+import SegmentBar from "./SegmentBar.tsx"
+import ReportSegmentModal from "./ReportSegmentModal.tsx"
+import {BEEP_BASE64} from "../../assets/base64-asset.ts"
 
 const videoSelectors = [".bpx-player-video-area video", ".bilibili-player video", "video"]
 // progress is bar when hovering on video player
@@ -28,6 +29,23 @@ const SkipSegment: FC = () => {
     const [startTime, setStartTime] = useState<number>(0)
     const [endTime, setEndTime] = useState<number>(0)
     const lastCheckTime = useRef(0)
+
+    const playBeep = (volume: number) => {
+        const onEnded = () => {
+            navigator.mediaSession.metadata = null
+            setTimeout(() => {
+                navigator.mediaSession.metadata = oldMetadata
+                beep.removeEventListener('ended', onEnded)
+                beep.remove()
+            }, 0)
+        }
+
+        const beep = new Audio(BEEP_BASE64)
+        beep.volume = volume
+        const oldMetadata = navigator.mediaSession.metadata
+        beep.addEventListener("ended", onEnded)
+        void beep.play()
+    }
 
     useEffect(() => {
         if (!bvId || !chapterId) return
@@ -92,6 +110,8 @@ const SkipSegment: FC = () => {
                 ) {
                     console.log(`[BC] skip from ${formatTime(playerElement.currentTime)} to ${formatTime(end)}`)
                     playerElement.currentTime = end
+                    // play beep to notice user, 0.1 volume is suitable
+                    playBeep(playerElement.volume / 10)
                     break
                 }
             }

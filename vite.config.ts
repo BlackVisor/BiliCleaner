@@ -14,7 +14,7 @@ export default defineConfig({
                 namespace: 'github/BlackVisor',
                 license: 'GPL-3.0',
                 // greasyfork里的version会自动加上v前缀，所以这里就不加了
-                version: '1.0.6',
+                version: '1.0.7',
                 description: '实现B站视频中广告相关片段自动跳过',
                 updateURL: 'https://github.com/BlackVisor/bilicleaner/releases/latest/download/bilicleaner.user.js', // Release Raw链接
                 downloadURL: 'https://github.com/BlackVisor/bilicleaner/releases/latest/download/bilicleaner.user.js', // 和updateURL一致即可
